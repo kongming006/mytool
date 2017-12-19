@@ -1,0 +1,75 @@
+" 我的vim配置
+" 使用方法：首先安装vundle，然后将这个文件内容复制到~/.vimrc文件里，再用PluginInstall
+
+set nocompatible
+filetype on
+filetype indent on
+filetype plugin on
+filetype plugin indent on
+
+" 基本配置
+set number
+set ruler
+set nowrap
+set showcmd
+set showmatch
+set history=1000
+set t_Co=256
+set mouse=a
+
+"设置取消备份 禁止临时文件生成
+set nobackup
+set noswapfile
+
+"突出当前行列
+set cursorline
+"set cursorcolumn
+
+"设置C/C++方式自动对齐
+set autoindent
+set cindent
+
+"开启语法高亮功能
+syntax enable
+syntax on
+
+"设置格式
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+set smarttab
+set expandtab
+
+"设置编码方式
+set encoding=utf-8
+set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
+set ff=unix
+
+"系统剪切板 复制 剪切 粘贴
+vmap <C-c> "+y
+vmap <C-x> "+c
+vmap <C-v> c<ESC>"+p
+imap <C-v> <C-r><C-o>+
+nmap <C-v> "+p
+
+" vundle及其插件配置
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+Plugin 'L9'
+Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
+Plugin 'majutsushi/tagbar'
+Plugin 'scrooloose/nerdtree'
+
+call vundle#end() 
+filetype plugin indent on 
+
+" tagbar config
+nmap <F3> :TagbarToggle<CR>
+
+" NERDTree config
+map <F2> :NERDTreeToggle<CR>
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTreeType") && b:NERD
