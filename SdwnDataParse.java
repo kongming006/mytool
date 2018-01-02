@@ -3,165 +3,151 @@ package mytools;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.regex.*;
 
-enum DataType {
-	IPERF_TCP_BANDWIDTH, IPERF_UDP_BANDWIDTH, TERMINAL_PING
-}
-
 /**
- * SDWNÏîÄ¿Êı¾İ½âÎö¹¤¾ß£¬¿ÉÒÔ½âÎöiperf²âÊÔµÄÊı¾İ£¬Ò²¿ÉÒÔ½âÎöping²âÊÔµÄÊı¾İ
- * ÕıÔò±í´ïÊ½ÓÉÔÚÏßÉú³ÉÆ÷Éú³É£¬ÍøÖ·£ºhttp://www.txt2re.com/index.php3
+ * SDWNé¡¹ç›®æ•°æ®è§£æå·¥å…·ï¼Œå¯ä»¥è§£æiperfæµ‹è¯•çš„æ•°æ®ï¼Œä¹Ÿå¯ä»¥è§£æpingæµ‹è¯•çš„æ•°æ®
+ * æ­£åˆ™è¡¨è¾¾å¼ç”±åœ¨çº¿ç”Ÿæˆå™¨ç”Ÿæˆï¼Œç½‘å€ï¼šhttp://www.txt2re.com/index.php3
  * @author kong
  *
  */
-public class SdwnDataParse {
+public class SdwnDataParser {
+	
+	private File file = null;
+	private InputStreamReader isr = null;
+	private BufferedReader br = null;
 
+	public SdwnDataParser(File file) {
+		this.file = file;
+	}
+	
+	/**
+	 * è¯»å–æ–‡ä»¶ä¸­çš„ä¸€è¡Œæµ‹è¯•æ•°æ®
+	 * @return
+	 * @throws IOException
+	 */
+	public String readLine() throws IOException {
+		
+		String line = null;
+		
+		if (br == null) {
+			try {
+				isr = new InputStreamReader(new FileInputStream(file));
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+				return null;
+			}
+            br = new BufferedReader(isr);
+		}
+		
+		if ((line = br.readLine()) != null) {
+			return line;
+		}
+		else {
+			br.close();
+			isr.close();
+			return null;
+		}
+	}
+	
+	/**
+	 * ä»iperfæµ‹è¯•å¸¦å®½çš„æ•°æ®æ–‡ä»¶ä¸­è§£æå‡ºBandwidthè¿™ä¸€åˆ—æ•°æ®ï¼ŒUDPå’ŒTCPä¸€æ ·
+	 * @param txt
+	 */
+	public String parseIperfBandwidth(String txt) {
+		String re1 = "[0-9\\.]+(?=\\sMbits/sec)";
+
+	    Pattern p = Pattern.compile(re1, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	    Matcher m = p.matcher(txt);
+	    if (m.find()) {
+	        String float1=m.group();
+	        return float1;
+	    }
+	    else {
+	    	return null;
+	    }
+	}
+	
+	/**
+	 * ä»iperfæµ‹è¯•UDPçš„æ•°æ®æ–‡ä»¶ä¸­è§£æå‡ºJitterè¿™ä¸€åˆ—æ•°æ®
+	 * @param txt
+	 */
+	public String parseIperfUdpJitter(String txt) {
+	    
+		String re1 = "[0-9\\.]+(?=\\sms)";
+
+	    Pattern p = Pattern.compile(re1, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	    Matcher m = p.matcher(txt);
+	    
+	    if (m.find()) {
+	        String float1=m.group();
+	        return float1;
+	    }
+	    else {
+	    	return null;
+	    }
+	}
+	
+	/**
+	 * ä»iperfæµ‹è¯•UDPçš„æ•°æ®æ–‡ä»¶ä¸­è§£æå‡ºDatagramsè¿™ä¸€åˆ—æ•°æ®
+	 * @param txt
+	 */
+	public String parseIperfUdpDatagrams(String txt) {
+	    
+		String re1 = "(?<=\\()[0-9\\.]+%(?=\\))";
+
+	    Pattern p = Pattern.compile(re1, Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	    Matcher m = p.matcher(txt);
+	    if (m.find())
+	    {
+	        String rbraces1=m.group();
+	        return rbraces1;
+	    }
+	    else {
+	    	return null;
+	    }
+	}
+	
+	/**
+	 * ä»pingæµ‹è¯•çš„æ•°æ®æ–‡ä»¶ä¸­è§£æå‡ºæ—¶å»¶æ•°æ®
+	 * @param txt
+	 */
+	public String parsePingLatency(String txt) {
+		String re1 = "(?<=time=)[0-9\\.]+(?=\\sms)";
+
+	    Pattern p = Pattern.compile(re1,Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
+	    Matcher m = p.matcher(txt);
+	    if (m.find()) {
+	        String res = m.group();
+	        return res;
+	    }
+	    else {
+	    	return null;
+	    }
+	}
+
+	
 	public static void main(String[] args) {
 		
-		String filePath = "C:\\Users\\kong\\Desktop\\ÆÕÍ¨AP\\Ê±ÑÓ²âÊÔ\\sta_to_controller_ping.txt";
-		DataType fileType = DataType.TERMINAL_PING;
+		String filePath = "E:\\å®éªŒå®¤é¡¹ç›®\\SDWNé¡¹ç›®\\æµ‹è¯•æ•°æ®\\è·¨ä¿¡é“UDPä¸Šè¡Œæµ‹è¯•\\è·¨ä¿¡é“UDPä¸Šè¡Œæµ‹è¯•2.txt";
+		File file = new File(filePath);
+		if (!file.exists() || !file.isFile())
+			return;
 		
-		try
-	    {
-	        File file = new File(filePath);
-	        
-	        // ÅĞ¶ÏÎÄ¼şÊÇ·ñ´æÔÚ
-	        if (file.isFile() && file.exists())
-	        { 
-	            InputStreamReader read = new InputStreamReader(
-	                    new FileInputStream(file));
-	            BufferedReader bufferedReader = new BufferedReader(read);
-	            String line = null;
-	            
-	            while ((line = bufferedReader.readLine()) != null)
-	            {
-	            	String result = parseData(line, fileType);
-	            	if (result != null && !result.equals("")) {
-	            		System.out.println(result);
-	            	}
-	            }
-	            bufferedReader.close();
-	            read.close();
-	        }
-	        else
-	        {
-	            System.out.println("ÕÒ²»µ½Ö¸¶¨µÄÎÄ¼ş");
-	        }
-	    }
-	    catch (Exception e)
-	    {
-	        System.out.println("¶ÁÈ¡ÎÄ¼şÄÚÈİ³ö´í");
-	        e.printStackTrace();
-	    }
+		SdwnDataParser sdp = new SdwnDataParser(file); 
+		String line;
+		try {
+			while ((line = sdp.readLine()) != null ) {
+				String result = sdp.parseIperfUdpDatagrams(line);
+				if (result != null && !result.equals("")) {
+					System.out.println(result);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}	
 	}
-	
-	/**
-	 * ½âÎöÊı¾İµÄ½Ó¿Úº¯Êı
-	 * @param txt ´ı½âÎöµÄÊı¾İĞĞ
-	 * @param type ´ı½âÎöµÄÊı¾İÀàĞÍ
-	 * @return
-	 */
-	public static String parseData(String txt, DataType type) {
-		String result = null;
-		switch(type) {
-		case IPERF_TCP_BANDWIDTH:
-			result = parseIperfTcpBandwidth(txt);
-			break;
-		case IPERF_UDP_BANDWIDTH:
-			result = parseIperfUdpBandwidth(txt);
-			break;
-		case TERMINAL_PING:
-			result = parsePingLatency(txt);
-			break;
-		default:
-			break;
-		}
-		return result;
-	}
-	
-	/**
-	 * ´Óiperf²âÊÔTCP´ø¿íµÄÊı¾İÎÄ¼şÖĞ½âÎö³öBandwidthÕâÒ»ÁĞÊı¾İ
-	 * @param txt
-	 */
-	public static String parseIperfTcpBandwidth(String txt) {
-		String re1=".*?";	// Non-greedy match on filler
-	    String re2="[+-]?\\d*\\.\\d+(?![-+0-9\\.])";	// Uninteresting: float
-	    String re3=".*?";	// Non-greedy match on filler
-	    String re4="[+-]?\\d*\\.\\d+(?![-+0-9\\.])";	// Uninteresting: float
-	    String re5=".*?";	// Non-greedy match on filler
-	    String re6="([+-]?\\d*\\.\\d+)(?![-+0-9\\.])";	// Float 1
-
-	    Pattern p = Pattern.compile(re1+re2+re3+re4+re5+re6,Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	    Matcher m = p.matcher(txt);
-	    if (m.find()) {
-	        String float1=m.group(1);
-	        return float1;
-	    }
-	    else {
-	    	return null;
-	    }
-	}
-	
-	/**
-	 * ´Óiperf²âÊÔUDP´ø¿íµÄÊı¾İÎÄ¼şÖĞ½âÎö³öBandwidthÕâÒ»ÁĞÊı¾İ
-	 * @param txt
-	 */
-	public static String parseIperfUdpBandwidth(String txt) {
-	    String re1=".*?";	// Non-greedy match on filler
-	    String re2="[+-]?\\d*\\.\\d+(?![-+0-9\\.])";	// Uninteresting: float
-	    String re3=".*?";	// Non-greedy match on filler
-	    String re4="[+-]?\\d*\\.\\d+(?![-+0-9\\.])";	// Uninteresting: float
-	    String re5=".*?";	// Non-greedy match on filler
-	    String re6="([+-]?\\d*\\.\\d+)(?![-+0-9\\.])";	// Float 1
-
-	    Pattern p = Pattern.compile(re1+re2+re3+re4+re5+re6,Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	    Matcher m = p.matcher(txt);
-	    if (m.find()) {
-	        String float1=m.group(1);
-	        return float1;
-	    }
-	    else {
-	    	return null;
-	    }
-	}
-	
-	/**
-	 * ´Óping²âÊÔµÄÊı¾İÎÄ¼şÖĞ½âÎö³öÊ±ÑÓÊı¾İ
-	 * @param txt
-	 */
-	public static String parsePingLatency(String txt) {
-		String re1=".*?";	// Non-greedy match on filler
-	    String re2="\\d+";	// Uninteresting: int
-	    String re3=".*?";	// Non-greedy match on filler
-	    String re4="\\d+";	// Uninteresting: int
-	    String re5=".*?";	// Non-greedy match on filler
-	    String re6="\\d+";	// Uninteresting: int
-	    String re7=".*?";	// Non-greedy match on filler
-	    String re8="\\d+";	// Uninteresting: int
-	    String re9=".*?";	// Non-greedy match on filler
-	    String re10="\\d+";	// Uninteresting: int
-	    String re11=".*?";	// Non-greedy match on filler
-	    String re12="\\d+";	// Uninteresting: int
-	    String re13=".*?";	// Non-greedy match on filler
-	    String re14="\\d+";	// Uninteresting: int
-	    String re15=".*?";	// Non-greedy match on filler
-	    String re16="(\\d+)";	// Integer Number 1
-	    String re17="(.)";	// Any Single Character 1
-	    String re18="(\\d+)";	// Integer Number 2
-
-	    Pattern p = Pattern.compile(re1+re2+re3+re4+re5+re6+re7+re8+re9+re10+re11+re12+re13+re14+re15+re16+re17+re18,Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	    Matcher m = p.matcher(txt);
-	    if (m.find()) {
-	        String int1=m.group(1);
-	        String c1=m.group(2);
-	        String int2=m.group(3);
-	        return int1.toString()+c1.toString()+int2.toString();
-	    }
-	    else {
-	    	return null;
-	    }
-	}
-
 }
