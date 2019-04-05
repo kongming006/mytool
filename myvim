@@ -17,35 +17,35 @@ set history=1000
 set t_Co=256
 set mouse=a
 
-"设置取消备份 禁止临时文件生成
+" 设置取消备份 禁止临时文件生成
 set nobackup
 set noswapfile
 
-"突出当前行列
+" 突出当前行列
 set cursorline
 "set cursorcolumn
 
-"设置C/C++方式自动对齐
+" 设置C/C++方式自动对齐
 set autoindent
 set cindent
 
-"开启语法高亮功能
+" 开启语法高亮功能
 syntax enable
 syntax on
 
-"设置格式
+" 设置格式
 set tabstop=4
 set shiftwidth=4
 set softtabstop=4
 set smarttab
 set expandtab
 
-"设置编码方式
+" 设置编码方式
 set encoding=utf-8
 set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
 set ff=unix
 
-"系统剪切板 复制 剪切 粘贴
+" 系统剪切板 复制 剪切 粘贴
 vmap <C-c> "+y
 vmap <C-x> "+c
 vmap <C-v> c<ESC>"+p
