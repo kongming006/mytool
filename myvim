@@ -45,7 +45,7 @@ set encoding=utf-8
 set fileencodings=ucs-bom,utf-8,cp936,gb18030,big5,euc-jp,euc-kr,latin1
 set ff=unix
 
-" 系统剪切板 复制 剪切 粘贴
+" 系统剪切板(复制 剪切 粘贴)
 vmap <C-c> "+y
 vmap <C-x> "+c
 vmap <C-v> c<ESC>"+p
@@ -61,6 +61,7 @@ Plugin 'L9'
 Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 Plugin 'majutsushi/tagbar'
 Plugin 'scrooloose/nerdtree'
+Plugin 'vim-airline/vim-airline'
 
 call vundle#end() 
 filetype plugin indent on
@@ -72,3 +73,11 @@ nmap <F3> :TagbarToggle<CR>
 map <F2> :NERDTreeToggle<CR>
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
+" airline config
+let g:airline#extensions#tabline#enabled = 1
+
+" panel切换
+nnoremap <C-J> <C-W><C-J>
+nnoremap <C-K> <C-W><C-K>
+nnoremap <C-L> <C-W><C-L>
+nnoremap <C-H> <C-W><C-H>
