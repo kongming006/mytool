@@ -2,7 +2,7 @@
 " 使用方法：首先安装vundle，然后将这个文件内容复制到~/.vimrc文件里，再用PluginInstall
 
 set nocompatible
-filetype on
+filetype off
 filetype indent on
 filetype plugin on
 filetype plugin indent on
@@ -53,11 +53,9 @@ imap <C-v> <C-r><C-o>+
 nmap <C-v> "+p
 
 " vundle及其插件配置
-" set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
 
-" let Vundle manage Vundle, required
 Plugin 'VundleVim/Vundle.vim'
 Plugin 'L9'
 Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
@@ -65,7 +63,7 @@ Plugin 'majutsushi/tagbar'
 Plugin 'scrooloose/nerdtree'
 
 call vundle#end() 
-filetype plugin indent on 
+filetype plugin indent on
 
 " tagbar config
 nmap <F3> :TagbarToggle<CR>
